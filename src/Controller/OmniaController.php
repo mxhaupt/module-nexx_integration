@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
- * Class Omnia.
+ * Class OmniaController.
  *
  * @package Drupal\nexx_integration\Controller
  */
@@ -78,7 +78,7 @@ class OmniaController extends ControllerBase {
   protected $token;
 
   /**
-   * Omnia constructor.
+   * OmniaController constructor.
    *
    * @param \Drupal\Core\Database\Connection $database
    *   The database service.

@@ -2,3 +2,7 @@ services:
   nexx_integration.notification:
     class: Drupal\nexx_integration\NexxNotification
     arguments: ['@entity_type.manager', '@entity.query', '@config.factory', '@logger.factory', '@http_client']
+
+  nexx_integration.videomanager:
+    class: Drupal\nexx_integration\VideoManagerService
+    arguments: ['@entity_field.manager', '@config.factory', '@logger.factory']

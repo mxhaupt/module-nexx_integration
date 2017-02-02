@@ -218,3 +218,23 @@ function update_nexx_term_id_mapping($drupal_id, $nexx_id) {
     'nexx_item_id' => $nexx_id,
   ])->execute();
 }
+
+/**
+ * Implements hook_cron().
+ */
+function nexx_integration_cron() {
+  /** @var \Drupal\nexx_integration\VideoManagerServiceInterface $videoManager */
+  $videoManager = \Drupal::getContainer()->get('nexx_integration.videomanager');
+  $storage = \Drupal::entityTypeManager()->getStorage($videoManager->entityType());
+
+  $video_field = $videoManager->videoFieldName();
+
+  /** @var \Drupal\Core\Entity\Query\QueryInterface $ids */
+  $ids = $storage->getQuery()
+    ->condition($video_field . '.validto_ssc', 0, '<>')
+    ->condition($video_field . '.validto_ssc', REQUEST_TIME, '>')
+    ->condition("status", Media::PUBLISHED)
+    ->execute();
+
+  print_r($ids);
+}
