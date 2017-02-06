@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\media_entity\Entity\Media;
 
 /**
  * Implements hook_taxonomy_term_insert().
@@ -229,12 +230,31 @@ function nexx_integration_cron() {
 
   $video_field = $videoManager->videoFieldName();
 
+  // Check videos, that could be activated.
+  /** @var \Drupal\Core\Entity\Query\QueryInterface $ids */
+  $ids = $storage->getQuery()
+    ->condition($video_field . '.validfrom_ssc', REQUEST_TIME, '>')
+    ->condition("status", Media::NOT_PUBLISHED)
+    ->execute();
+
+  print_r(REQUEST_TIME . PHP_EOL);
+  foreach ($storage->loadMultiple($ids) as $video) {
+    print "publish";
+    $video->set("status", Media::PUBLISHED);
+    $video->save();
+  }
+
+
   /** @var \Drupal\Core\Entity\Query\QueryInterface $ids */
   $ids = $storage->getQuery()
     ->condition($video_field . '.validto_ssc', 0, '<>')
-    ->condition($video_field . '.validto_ssc', REQUEST_TIME, '>')
+    ->condition($video_field . '.validto_ssc', REQUEST_TIME, '<')
     ->condition("status", Media::PUBLISHED)
     ->execute();
 
-  print_r($ids);
+  foreach ($storage->loadMultiple($ids) as $video) {
+    print "unpublish";
+    $video->set("status", Media::NOT_PUBLISHED);
+    $video->save();
+  }
 }

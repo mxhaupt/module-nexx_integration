@@ -4,6 +4,7 @@ namespace Drupal\nexx_integration;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Logger\LoggerChannelFactory;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -43,17 +44,17 @@ class VideoManagerService implements VideoManagerServiceInterface {
    *   The entity field manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
-   * @param \Psr\Log\LoggerInterface $logger
-   *   The logger service.
+   * @param \Drupal\Core\Logger\LoggerChannelFactory $logger
+   *   The config factory service.
    */
   public function __construct(
     EntityFieldManagerInterface $entity_field_manager,
     ConfigFactoryInterface $config_factory,
-    LoggerInterface $logger
+    LoggerChannelFactory $logger
   ) {
     $this->entityFieldManager = $entity_field_manager;
-    $this->config = $config_factory;
-    $this->logger = $logger;
+    $this->config = $config_factory->get('nexx_integration.settings');
+    $this->logger = $logger->get('nexx_integration');
   }
 
   /**
@@ -86,8 +87,7 @@ class VideoManagerService implements VideoManagerServiceInterface {
    * {@inheritdoc}
    */
   public function videoBundle() {
-    if (!$videoBundle = $this->config('nexx_integration.settings')
-      ->get('video_bundle')
+    if (!$videoBundle = $this->config->get('video_bundle')
     ) {
       throw new \Exception('There is no video bundle setup. Please configure module first.');
     }
