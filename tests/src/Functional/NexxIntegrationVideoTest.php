@@ -334,8 +334,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $this->assertEquals(0, $videoEntity->get("status")->getString(), "Video
     $id should be set to status=0 after cron run with expire date in the past.");
 
-
-    // Set expire date to the future, the activation date in the past and run cron.
+    // Set expire date to the future, the activation date in the past
+    // and run cron.
     $videoEntity->get($videoFieldName)->first()->set('validto_ssc', $futureDate);
     $videoEntity->get($videoFieldName)->first()->set('validfrom_ssc', $pastDate);
     $videoEntity->save();
