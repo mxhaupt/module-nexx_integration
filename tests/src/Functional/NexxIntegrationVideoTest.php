@@ -368,12 +368,6 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    *
    * @param int $videoId
    *   Setup video ID.
-   * @param int $isDeleted
-   *   Setup if idDeleted will be 0|1.
-   * @param int $isSSC
-   *   Setup if isSSC will be 0|1.
-   * @param int $active
-   *   Setup if active will be 0|1.
    *
    * @return \stdClass
    *   Test video data object
