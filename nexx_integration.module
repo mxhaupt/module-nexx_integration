@@ -243,11 +243,10 @@ function nexx_integration_cron() {
     $video->set("status", Media::PUBLISHED);
     $video->save();
     $logger->info("Published nexx video \"@videoname\"", array(
-        '@videoname' => $video->label()
-      )
+      '@videoname' => $video->label(),
+    )
     );
   }
-
 
   /** @var \Drupal\Core\Entity\Query\QueryInterface $ids */
   $ids = $storage->getQuery()
@@ -260,8 +259,8 @@ function nexx_integration_cron() {
     $video->set("status", Media::NOT_PUBLISHED);
     $video->save();
     $logger->info("Unpublished nexx video \"@videoname\"", array(
-        '@videoname' => $video->label()
-      )
+      '@videoname' => $video->label(),
+    )
     );
   }
 }

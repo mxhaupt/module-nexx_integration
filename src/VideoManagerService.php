@@ -5,7 +5,6 @@ namespace Drupal\nexx_integration;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactory;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class VideoManagerService.
