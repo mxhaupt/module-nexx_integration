@@ -226,6 +226,7 @@ function update_nexx_term_id_mapping($drupal_id, $nexx_id) {
 function nexx_integration_cron() {
   /** @var \Drupal\nexx_integration\VideoManagerServiceInterface $videoManager */
   $videoManager = \Drupal::getContainer()->get('nexx_integration.videomanager');
+  $logger = \Drupal::getContainer()->get('logger.factory')->get('nexx_integration');
   $storage = \Drupal::entityTypeManager()->getStorage($videoManager->entityType());
 
   $video_field = $videoManager->videoFieldName();
@@ -233,28 +234,34 @@ function nexx_integration_cron() {
   // Check videos, that could be activated.
   /** @var \Drupal\Core\Entity\Query\QueryInterface $ids */
   $ids = $storage->getQuery()
-    ->condition($video_field . '.validfrom_ssc', REQUEST_TIME, '>')
+    ->condition($video_field . '.validfrom_ssc', REQUEST_TIME, '<=')
+    ->condition($video_field . '.validto_ssc', REQUEST_TIME, '>')
     ->condition("status", Media::NOT_PUBLISHED)
     ->execute();
 
-  print_r(REQUEST_TIME . PHP_EOL);
   foreach ($storage->loadMultiple($ids) as $video) {
-    print "publish";
     $video->set("status", Media::PUBLISHED);
     $video->save();
+    $logger->info("Published nexx video \"@videoname\"", array(
+        '@videoname' => $video->label()
+      )
+    );
   }
 
 
   /** @var \Drupal\Core\Entity\Query\QueryInterface $ids */
   $ids = $storage->getQuery()
     ->condition($video_field . '.validto_ssc', 0, '<>')
-    ->condition($video_field . '.validto_ssc', REQUEST_TIME, '<')
+    ->condition($video_field . '.validto_ssc', REQUEST_TIME, '<=')
     ->condition("status", Media::PUBLISHED)
     ->execute();
 
   foreach ($storage->loadMultiple($ids) as $video) {
-    print "unpublish";
     $video->set("status", Media::NOT_PUBLISHED);
     $video->save();
+    $logger->info("Unpublished nexx video \"@videoname\"", array(
+        '@videoname' => $video->label()
+      )
+    );
   }
 }
