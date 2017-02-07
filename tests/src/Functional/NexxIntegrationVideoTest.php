@@ -167,7 +167,9 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
   public function testInactiveVideoCreation() {
     $id = 3;
     // Send active=0 now.
-    $data = $this->getTestVideoData($id, 0, 1, 0);
+    $data = $this->getTestVideoData($id);
+    $data->itemStates->active = 0;
+
     $videoData = $this->postVideoData($data);
     $this->assertEquals($videoData->refnr, $id, "Video id is $id");
 
@@ -181,8 +183,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    */
   public function testInactiveVideoUpdate() {
     $id = 4;
-    // Send active=1 now.
-    $data = $this->getTestVideoData($id, 0, 1, 1);
+
+    $data = $this->getTestVideoData($id);
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -191,7 +193,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     );
 
     // Send active=0 now.
-    $data = $this->getTestVideoData($id, 0, 1, 0);
+    $data->itemStates->active = 0;
+
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -205,8 +208,11 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    */
   public function testInactiveSscVideoCreation() {
     $id = 5;
+
+    $data = $this->getTestVideoData($id);
     // Send isSSC=0 now.
-    $data = $this->getTestVideoData($id, 0, 0, 1);
+    $data->itemStates->isSSC = 0;
+
     $videoData = $this->postVideoData($data);
     $this->assertEquals($videoData->refnr, $id, "Video id is $id");
 
@@ -219,8 +225,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    */
   public function testInactiveSscVideoUpdate() {
     $id = 6;
-    // Send isSSC=1 now.
-    $data = $this->getTestVideoData($id, 0, 1, 1);
+    $data = $this->getTestVideoData($id);
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -228,7 +233,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $id should be status=1 because of isSSC=1.");
 
     // Send isSSC=0 now.
-    $data = $this->getTestVideoData($id, 0, 0, 1);
+    $data->itemStates->isSSC = 0;
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -242,8 +247,10 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
   public function testDeletedVideoCreate() {
     $id = 7;
     $count = $this->countVideos();
+    $data = $this->getTestVideoData($id);
     // Send delete=1 now.
-    $data = $this->getTestVideoData($id, 1, 1, 1);
+    $data->itemStates->isDeleted = 1;
+
     $videoData = $this->postVideoData($data);
     $this->assertEquals($videoData->refnr, $id, "Video id is $id");
 
@@ -258,7 +265,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $id = 8;
 
     // Send delete=0 now.
-    $data = $this->getTestVideoData($id, 0, 1, 1);
+    $data = $this->getTestVideoData($id);
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -266,8 +273,10 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $id should be status=1 before deletion.");
     $count = $this->countVideos();
 
+    $data = $this->getTestVideoData($id);
     // Send delete=1 now.
-    $data = $this->getTestVideoData($id, 1, 1, 1);
+    $data->itemStates->isDeleted = 1;
+
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -369,7 +378,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    * @return \stdClass
    *   Test video data object
    */
-  protected function getTestVideoData($videoId, $isDeleted = 0, $isSSC = 1, $active = 1) {
+  protected function getTestVideoData($videoId) {
     $tags = [];
     foreach ($this->terms['testTags'] as $tag) {
       $tags[] = $this->mapOmniaTermId($tag->id());
@@ -397,7 +406,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $itemData->tags_ids = implode(',', $tags);
 
     $itemStates = new \stdClass();
-    $itemStates->isSSC = $isSSC;
+    $itemStates->isSSC = 1;
     $itemStates->encodedSSC = 1;
     $itemStates->validfrom_ssc = 0;
     $itemStates->validto_ssc = 0;
@@ -406,8 +415,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $itemStates->encodedMOBILE = 1;
     $itemStates->validfrom_mobile = 0;
     $itemStates->validto_mobile = 0;
-    $itemStates->active = $active;
-    $itemStates->isDeleted = $isDeleted;
+    $itemStates->active = 1;
+    $itemStates->isDeleted = 0;
     $itemStates->isBlocked = 0;
     $itemStates->encodedTHUMBS = 1;
 
