@@ -242,8 +242,9 @@ function nexx_integration_cron() {
   foreach ($storage->loadMultiple($ids) as $video) {
     $video->set("status", Media::PUBLISHED);
     $video->save();
-    $logger->info("Published nexx video \"@videoname\"", array(
+    $logger->info("Published nexx video \"@videoname\" (id: @id)", array(
       '@videoname' => $video->label(),
+      '@id' => $video->id(),
     )
     );
   }
@@ -256,10 +257,12 @@ function nexx_integration_cron() {
     ->execute();
 
   foreach ($storage->loadMultiple($ids) as $video) {
+    /** @var \Drupal\media_entity\MediaInterface $video */
     $video->set("status", Media::NOT_PUBLISHED);
     $video->save();
-    $logger->info("Unpublished nexx video \"@videoname\"", array(
+    $logger->info("Unpublished nexx video \"@videoname\" (id: @id)", array(
       '@videoname' => $video->label(),
+      '@id' => $video->id(),
     )
     );
   }

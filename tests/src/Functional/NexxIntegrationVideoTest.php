@@ -75,11 +75,25 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
   protected $fieldStorageDefinition;
 
   /**
+   * The video manager service.
+   *
+   * @var \Drupal\nexx_integration\VideoManagerServiceInterface
+   */
+  protected $videoManager;
+
+  /**
    * The field entity definition.
    *
    * @var array
    */
   protected $fieldDefinition;
+
+  /**
+   * The drupal cron service.
+   *
+   * @var \Drupal\Core\Cron
+   */
+  protected $cron;
 
   public static $modules = [
     'taxonomy',
@@ -94,6 +108,9 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
   protected function setUp() {
     parent::setUp();
     $this->database = $this->container->get('database');
+    $this->videoManager = $this->container->get('nexx_integration.videomanager');
+    $this->cron = $this->container->get('cron');
+
     // Prepare some users.
     $this->adminUser = $this->drupalCreateUser([], NULL, TRUE);
     $this->videoUser = $this->drupalCreateUser(['use omnia notification gateway']);
@@ -134,7 +151,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
-    $videoField = $videoEntity->get('field_video');
+    $videoFieldName = $this->videoManager->videoFieldName();
+    $videoField = $videoEntity->get($videoFieldName);
 
     $this->assertEquals($videoEntity->label(), $videoField->title);
 
@@ -283,6 +301,49 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $this->assertNull($videoEntity, "Video id $id should be deleted.");
     $this->assertEquals($count - 1, $this->countVideos(), "Counting all videos 
     after deletion. Video id $id should be deleted.");
+  }
+
+  /**
+   * Test expiration cron.
+   */
+  public function testCronExpiration() {
+    $id = 9;
+    $pastDate = REQUEST_TIME - 10000;
+    $futureDate = REQUEST_TIME + 10000;
+    $videoFieldName = $this->videoManager->videoFieldName();
+
+    // First create a new entity that should be created as an active entity
+    // with activation date in the past and expire date in the futur.
+    $data = $this->getTestVideoData($id);
+    $data->itemStates->validfrom_ssc = $pastDate;
+    $data->itemStates->validto_ssc = $futureDate;
+
+    $videoData = $this->postVideoData($data);
+    $videoEntity = $this->loadVideoEntity($videoData->value);
+
+    // Make sure this is active.
+    $this->assertEquals(1, $videoEntity->get("status")->getString(), "Video
+    $id should be created with status=1.");
+
+    // Set expire date in the past and run cron.
+    $videoEntity->get($videoFieldName)->first()->set('validto_ssc', $pastDate);
+    $videoEntity->save();
+
+    $this->cron->run();
+    $videoEntity = $this->loadVideoEntity($videoData->value);
+    $this->assertEquals(0, $videoEntity->get("status")->getString(), "Video
+    $id should be set to status=0 after cron run with expire date in the past.");
+
+
+    // Set expire date to the future, the activation date in the past and run cron.
+    $videoEntity->get($videoFieldName)->first()->set('validto_ssc', $futureDate);
+    $videoEntity->get($videoFieldName)->first()->set('validfrom_ssc', $pastDate);
+    $videoEntity->save();
+
+    $this->cron->run();
+    $videoEntity = $this->loadVideoEntity($videoData->value);
+    $this->assertEquals(1, $videoEntity->get("status")->getString(), "Video
+    $id should be set to status=1 after cron run with activation date in the past.");
   }
 
   /**
