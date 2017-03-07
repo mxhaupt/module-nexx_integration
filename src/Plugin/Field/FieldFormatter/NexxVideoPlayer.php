@@ -78,24 +78,39 @@ class NexxVideoPlayer extends FormatterBase implements ContainerFactoryPluginInt
    */
   public function viewElements(FieldItemListInterface $items, $langcode = NULL) {
     $elements = [];
+    $omnia_id = $this->config->get('omnia_id');
 
-    foreach ($items as $delta => $item) {
-      $elements[$delta] = [
-        '#theme' => 'nexx_player',
-        '#omnia_id' => $this->config->get('omnia_id'),
-        '#video_id' => $item->item_id,
-        '#container_id' => 'player--' . Crypt::randomBytesBase64(8),
-        '#attached' => array(
-          'library' => array(
-            'nexx_integration/base',
-          ),
-        ),
-        /*
-        '#cache' => [
-          'tags' => $user->getCacheTags(),
-        ],
-         */
-      ];
+    if ($omnia_id) {
+      foreach ($items as $delta => $item) {
+        $elements[$delta] = [
+          '#theme' => 'nexx_player',
+          '#container_id' => 'player--' . Crypt::randomBytesBase64(8),
+          '#video_id' => $item->item_id,
+          // TODO #autoplay should be configurable.
+          '#autoplay' => '1',
+          '#attached' => [
+            'library' => [
+              'nexx_integration/base',
+            ],
+            'html_head' => [
+              [
+                [
+                  '#type' => 'html_tag',
+                  '#tag' => 'script',
+                  '#value' => '',
+                  '#attributes' => ['src' => '//require.nexx.cloud/' . $omnia_id, 'type' => 'text/javascript'],
+                ],
+                'nexx-cloud',
+              ],
+            ],
+          ],
+          /*
+          '#cache' => [
+            'tags' => $user->getCacheTags(),
+          ],
+           */
+        ];
+      }
     }
 
     return $elements;

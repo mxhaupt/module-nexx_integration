@@ -1,11 +1,10 @@
+langcode: en
 status: true
 dependencies:
   config:
     - field.field.media.nexx_video.field_preview_image
     - field.field.media.nexx_video.field_video
     - media_entity.bundle.nexx_video
-_core:
-  default_config_hash: ObjTiv7oOqv2cggqysAkI6qIo-qrJdHf-r09vxEpsek
 id: media.nexx_video.default
 targetEntityType: media
 bundle: nexx_video

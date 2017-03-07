@@ -1,9 +1,8 @@
+langcode: en
 status: true
 dependencies:
   module:
     - nexx_integration
-_core:
-  default_config_hash: RUcXViEdtb9kZ5FFoveh28mb7BJtVTvvSH4-vQAUPhU
 id: nexx_video
 label: 'Nexx Video'
 description: ''

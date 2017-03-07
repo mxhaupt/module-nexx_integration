@@ -5,7 +5,7 @@ namespace Drupal\nexx_integration;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
-use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -41,7 +41,7 @@ class NexxNotification implements NexxNotificationInterface {
   /**
    * The config factory service.
    *
-   * @var \Psr\Log\LoggerInterface
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
    */
   protected $logger;
 
@@ -65,7 +65,7 @@ class NexxNotification implements NexxNotificationInterface {
    *   The entity query object for taxonomy terms.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
-   * @param \Drupal\Core\Logger\LoggerChannelFactory $logger
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The config factory service.
    * @param \GuzzleHttp\Client $http_client
    *   The HTTP client.
@@ -74,13 +74,13 @@ class NexxNotification implements NexxNotificationInterface {
     EntityTypeManagerInterface $entity_type_manager,
     QueryFactory $query,
     ConfigFactoryInterface $config_factory,
-    LoggerChannelFactory $logger,
+    LoggerChannelFactoryInterface $logger_factory,
     Client $http_client
   ) {
     $this->termStorage = $entity_type_manager->getStorage('taxonomy_term');
     $this->nodeQuery = $query->get('node');
     $this->config = $config_factory->get('nexx_integration.settings');
-    $this->logger = $logger->get('nexx_integration');
+    $this->logger = $logger_factory->get('nexx_integration');
     $this->httpClient = $http_client;
   }
 

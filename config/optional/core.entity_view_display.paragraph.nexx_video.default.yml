@@ -1,3 +1,4 @@
+langcode: en
 status: true
 dependencies:
   config:
@@ -16,6 +17,7 @@ content:
       view_mode: default
     third_party_settings: {  }
     type: entity_reference_entity_view
+    region: content
 hidden:
   created: true
   uid: true

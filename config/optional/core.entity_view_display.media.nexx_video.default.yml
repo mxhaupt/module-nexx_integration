@@ -1,3 +1,4 @@
+langcode: en
 status: true
 dependencies:
   config:
@@ -6,8 +7,6 @@ dependencies:
     - media_entity.bundle.nexx_video
   module:
     - nexx_integration
-_core:
-  default_config_hash: e-LbXsMDcDwlOblWcbWuX1ZoIQZS91Gz8GtBvzxMvEw
 id: media.nexx_video.default
 targetEntityType: media
 bundle: nexx_video
@@ -19,6 +18,7 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: nexx_video_player
+    region: content
 hidden:
   created: true
   field_preview_image: true

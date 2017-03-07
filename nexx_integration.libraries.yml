@@ -3,3 +3,12 @@ base:
   css:
     theme:
       'css/styles.css': {}
+  js:
+    js/nexxplay.js: {}
+    js/models/PlayerModel.js: {}
+    js/views/SwiperObserverView.js: {}
+    js/views/PlayerView.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/backbone

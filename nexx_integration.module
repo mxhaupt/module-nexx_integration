@@ -160,9 +160,9 @@ function nexx_integration_theme() {
   return array(
     'nexx_player' => array(
       'variables' => array(
-        'video_id' => NULL,
-        'omnia_id' => NULL,
         'container_id' => NULL,
+        'video_id' => NULL,
+        'autoplay' => NULL,
       ),
       'template' => 'nexx-player',
     ),
