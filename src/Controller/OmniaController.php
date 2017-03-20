@@ -166,10 +166,10 @@ class OmniaController extends ControllerBase {
     }
 
     $this->logger->info('Incoming video "@title" (nexx id: @id)',
-      array(
+      [
         '@title' => $videoData->itemData->title,
         '@id' => $videoData->itemID,
-      )
+      ]
     );
 
     $video_field = $this->videoFieldName();
@@ -182,10 +182,10 @@ class OmniaController extends ControllerBase {
         $media = $this->mediaEntity($id);
         $media->delete();
         $this->logger->info('Deleted video "@title" (Drupal id: @id)',
-          array(
+          [
             '@title' => $videoData->itemData->title,
             '@id' => $id,
-          )
+          ]
         );
         $response->setData([
           'refnr' => $videoData->itemID,
@@ -204,10 +204,10 @@ class OmniaController extends ControllerBase {
     elseif ($id = array_pop($ids)) {
       $media = $this->mediaEntity($id);
       $this->logger->info('Updated video "@title" (Drupal id: @id)',
-        array(
+        [
           '@title' => $videoData->itemData->title,
           '@id' => $media->id(),
-        )
+        ]
       );
     }
 
@@ -215,10 +215,10 @@ class OmniaController extends ControllerBase {
     else {
       $media = $this->mediaEntity();
       $this->logger->info('Created video "@title" (Drupal id: @id)',
-        array(
+        [
           '@title' => $videoData->itemData->title,
           '@id' => $media->id(),
-        )
+        ]
       );
     }
 
@@ -275,10 +275,10 @@ class OmniaController extends ControllerBase {
       $status = Media::PUBLISHED;
 
       $this->logger->info('Published video "@title" (Drupal id: @id)',
-        array(
+        [
           '@title' => $videoData->itemData->title,
           '@id' => $media->id(),
-        )
+        ]
       );
     }
     else {
@@ -287,14 +287,14 @@ class OmniaController extends ControllerBase {
       isSSC:@isSSC 
       validfrom_ssc:@validfrom_ssc 
       validto_ssc:@validto_ssc ',
-        array(
+        [
           '@title' => $videoData->itemData->title,
           '@id' => $media->id(),
           '@active' => $videoData->itemStates->active,
           '@isSSC' => $videoData->itemStates->isSSC,
           '@validfrom_ssc' => $videoData->itemStates->validfrom_ssc,
           '@validto_ssc' => $videoData->itemStates->validto_ssc,
-        )
+        ]
       );
     }
 
@@ -386,10 +386,10 @@ class OmniaController extends ControllerBase {
       }
       else {
         $this->logger->warning('Unknown ID @term_id for term "@term_name"',
-          array(
+          [
             '@term_id' => $channel_id,
             '@term_name' => $videoData->itemData->channel,
-          )
+          ]
         );
       }
     }
@@ -445,9 +445,9 @@ class OmniaController extends ControllerBase {
       }
       else {
         $this->logger->warning('Unknown omnia ID @term_id"',
-          array(
+          [
             '@term_id' => $omnia_id,
-          )
+          ]
         );
       }
     }
@@ -466,7 +466,7 @@ class OmniaController extends ControllerBase {
    */
   protected function mapTermId($omnia_id) {
     $result = $this->database->select('nexx_taxonomy_term_data', 'n')
-      ->fields('n', array('tid'))
+      ->fields('n', ['tid'])
       ->condition('n.nexx_item_id', $omnia_id)
       ->execute();
 

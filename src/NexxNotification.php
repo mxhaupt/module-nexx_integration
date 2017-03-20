@@ -92,11 +92,11 @@ class NexxNotification implements NexxNotificationInterface {
       throw new \InvalidArgumentException(sprintf('Streamtype cannot be "%s" in insert operation.', $streamtype));
     }
     $response = $this->notificateNexx($streamtype, $reference_number, 'insert', $values);
-    $this->logger->info("insert @type. Reference number: @reference, values: @values", array(
+    $this->logger->info("insert @type. Reference number: @reference, values: @values", [
       '@type' => $streamtype,
       '@reference' => $reference_number,
       '@values' => print_r($values, TRUE),
-    )
+    ]
     );
     return $response;
   }
@@ -106,11 +106,11 @@ class NexxNotification implements NexxNotificationInterface {
    */
   public function update($streamtype, $reference_number, $values) {
     $response = $this->notificateNexx($streamtype, $reference_number, 'update', $values);
-    $this->logger->info("update @type. Reference number: @reference, values: @values", array(
+    $this->logger->info("update @type. Reference number: @reference, values: @values", [
       '@type' => $streamtype,
       '@reference' => $reference_number,
       '@values' => print_r($values, TRUE),
-    )
+    ]
     );
     return $response;
   }
@@ -118,15 +118,15 @@ class NexxNotification implements NexxNotificationInterface {
   /**
    * {@inheritdoc}
    */
-  public function delete($streamtype, $reference_number, $values) {
+  public function delete($streamtype, $reference_number, array $values) {
     if ($streamtype === 'video') {
       throw new \InvalidArgumentException(sprintf('Streamtype cannot be "%s" in delete operation.', $streamtype));
     }
     $response = $this->notificateNexx($streamtype, $reference_number, 'delete', $values);
-    $this->logger->info("delete @type. Reference number: @reference", array(
+    $this->logger->info("delete @type. Reference number: @reference", [
       '@type' => $streamtype,
       '@reference' => $reference_number,
-    )
+    ]
     );
 
     return $response;
@@ -177,9 +177,9 @@ class NexxNotification implements NexxNotificationInterface {
     }
 
     try {
-      $options = array(
+      $options = [
         'form_params' => $data,
-      );
+      ];
       /*
       $this->logger->debug("Send http request to @url with option: @options",
       [
@@ -191,26 +191,26 @@ class NexxNotification implements NexxNotificationInterface {
       $response_data = Json::decode($response->getBody()->getContents());
 
       if ($response_data['state'] !== 'ok') {
-        $this->logger->error("Omnia request failed: @error", array(
+        $this->logger->error("Omnia request failed: @error", [
           '@error' => $response_data['info'],
-        )
+        ]
         );
       }
       else {
-        $this->logger->info("Successful notification. Streamtype '@streamtype', command '@command', refnr '@refnr', values '@values' options @options", array(
+        $this->logger->info("Successful notification. Streamtype '@streamtype', command '@command', refnr '@refnr', values '@values' options @options", [
           '@streamtype' => $streamtype,
           '@command' => $command,
           '@refnr' => $reference_number,
           '@values' => print_r($values, TRUE),
           '@options' => print_r($options, TRUE),
-        )
+        ]
         );
       }
     }
     catch (RequestException $e) {
-      $this->logger->error("HTTP request failed: @error", array(
+      $this->logger->error("HTTP request failed: @error", [
         '@error' => $e->getMessage(),
-      )
+      ]
       );
     }
     return $response_data;

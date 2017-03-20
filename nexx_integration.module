@@ -115,7 +115,7 @@ function nexx_integration_taxonomy_term_request(EntityInterface $term, $command,
   $response_data = [];
   $valid_commands = ['update', 'insert', 'delete'];
   if (!in_array($command, $valid_commands)) {
-    $logger->error("Invalid command used: @command", array('@command' => $command));
+    $logger->error("Invalid command used: @command", ['@command' => $command]);
     return $response_data;
   }
 
@@ -185,30 +185,30 @@ function nexx_integration_taxonomy_term_request(EntityInterface $term, $command,
  * Implements hook_theme().
  */
 function nexx_integration_theme() {
-  return array(
-    'nexx_player' => array(
-      'variables' => array(
+  return [
+    'nexx_player' => [
+      'variables' => [
         'container_id' => NULL,
         'video_id' => NULL,
         'autoplay' => NULL,
-      ),
+      ],
       'template' => 'nexx-player',
-    ),
-    'iframe_nexx_player' => array(
-      'variables' => array(
+    ],
+    'iframe_nexx_player' => [
+      'variables' => [
         'video_hash' => NULL,
         'omnia_id' => NULL,
         'container_id' => NULL,
-      ),
+      ],
       'template' => 'iframe-nexx-player',
-    ),
-    'omnia_editor' => array(
-      'variables' => array(
+    ],
+    'omnia_editor' => [
+      'variables' => [
         'auth_key' => NULL,
-      ),
+      ],
       'template' => 'omnia-editor',
-    ),
-  );
+    ],
+  ];
 }
 
 /**
@@ -223,7 +223,7 @@ function nexx_integration_theme() {
 function nexx_integration_taxonomy_term_nexx_id(EntityInterface $term) {
   $database = \Drupal::getContainer()->get('database');
   $result = $database->select('nexx_taxonomy_term_data', 'n')
-    ->fields('n', array('nexx_item_id'))
+    ->fields('n', ['nexx_item_id'])
     ->condition('n.tid', $term->id())
     ->execute();
   $nexx_id = $result->fetchField();

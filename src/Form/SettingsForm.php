@@ -37,6 +37,8 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    *   The entity manager service.
    */
@@ -116,13 +118,13 @@ class SettingsForm extends ConfigFormBase {
 
     $entity_type = $this->entityManager->getDefinition('media');
     $bundle = !empty($values['type_settings']['video_bundle']) ? $values['type_settings']['video_bundle'] : $settings->get('video_bundle');
-    $form['type_settings']['video_bundle'] = array(
+    $form['type_settings']['video_bundle'] = [
       '#type' => 'select',
       '#title' => $entity_type->getBundleLabel() ?: $this->t('Bundles'),
       '#options' => $this->getEntityBundleOptions($entity_type),
       '#default_value' => $bundle,
       '#description' => $this->t('The bundle which is used for videos.'),
-    );
+    ];
     $form['type_settings']['bundles']['#access'] = !empty($form['type_settings']['bundles']['#options']);
 
     $form['notification_settings']['notification_access_key'] = [
@@ -138,13 +140,13 @@ class SettingsForm extends ConfigFormBase {
       '#submit' => ['::generateRandomKey'],
       // No validation at all is required in the equivocate case, so
       // we include this here to make it skip the form-level validator.
-      '#validate' => array(),
+      '#validate' => [],
     ];
     $form['notification_settings']['info'][] = [
       '#markup' => '<p>' . $this->t('The current value to provide in omnia domain settings for the video endpoint is:<br><strong>:endpoint</strong>',
-        array(
+        [
           ':endpoint' => $base_url . Url::fromRoute('nexx_integration.omnia_notification_gateway')->toString() . '?token=' . $settings->get('notification_access_key'),
-        )
+        ]
       ) . '</p>',
     ];
 
@@ -245,7 +247,7 @@ class SettingsForm extends ConfigFormBase {
    *   An array of bundle labels, keyed by bundle name.
    */
   protected function getEntityBundleOptions(EntityTypeInterface $entity_type) {
-    $bundle_options = array();
+    $bundle_options = [];
     // If the entity has bundles, allow option to restrict to bundle(s).
     if ($entity_type->hasKey('bundle')) {
       foreach ($this->entityManager->getBundleInfo($entity_type->id()) as $bundle_id => $bundle_info) {

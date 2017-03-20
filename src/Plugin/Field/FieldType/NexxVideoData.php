@@ -25,132 +25,132 @@ class NexxVideoData extends FieldItemBase {
   public static function schema(
     FieldStorageDefinitionInterface $field_definition
   ) {
-    return array(
-      'columns' => array(
-        'item_id' => array(
+    return [
+      'columns' => [
+        'item_id' => [
           'type' => 'int',
-        ),
-        'title' => array(
+        ],
+        'title' => [
           'type' => 'varchar',
           'length' => 256,
-        ),
-        'hash' => array(
+        ],
+        'hash' => [
           'type' => 'varchar',
           'length' => 16,
-        ),
-        'subtitle' => array(
+        ],
+        'subtitle' => [
           'type' => 'varchar',
           'length' => 256,
-        ),
-        'alttitle' => array(
+        ],
+        'alttitle' => [
           'type' => 'varchar',
           'length' => 256,
-        ),
-        'teaser' => array(
+        ],
+        'teaser' => [
           'type' => 'varchar',
           'length' => 256,
-        ),
-        'uploaded' => array(
+        ],
+        'uploaded' => [
           'type' => 'int',
-        ),
-        'channel_id' => array(
+        ],
+        'channel_id' => [
           'type' => 'int',
-        ),
-        'actors_ids' => array(
+        ],
+        'actors_ids' => [
           'type' => 'varchar',
           'length' => 256,
-        ),
-        'tags_ids' => array(
+        ],
+        'tags_ids' => [
           'type' => 'varchar',
           'length' => 256,
-        ),
-        'isSSC' => array(
+        ],
+        'isSSC' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'encodedSSC' => array(
+        ],
+        'encodedSSC' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'validfrom_ssc' => array(
+        ],
+        'validfrom_ssc' => [
           'type' => 'int',
-        ),
-        'validto_ssc' => array(
+        ],
+        'validto_ssc' => [
           'type' => 'int',
-        ),
-        'encodedHTML5' => array(
-          'type' => 'int',
-          'size' => 'tiny',
-          'unsigned' => 'true',
-        ),
-        'isMOBILE' => array(
+        ],
+        'encodedHTML5' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'encodedMOBILE' => array(
+        ],
+        'isMOBILE' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'validfrom_mobile' => array(
-          'type' => 'int',
-        ),
-        'validto_mobile' => array(
-          'type' => 'int',
-        ),
-        'isHYVE' => array(
+        ],
+        'encodedMOBILE' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'encodedHYVE' => array(
+        ],
+        'validfrom_mobile' => [
+          'type' => 'int',
+        ],
+        'validto_mobile' => [
+          'type' => 'int',
+        ],
+        'isHYVE' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'validfrom_hyve' => array(
-          'type' => 'int',
-        ),
-        'validto_hyve' => array(
-          'type' => 'int',
-        ),
-        'active' => array(
+        ],
+        'encodedHYVE' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'isDeleted' => array(
+        ],
+        'validfrom_hyve' => [
+          'type' => 'int',
+        ],
+        'validto_hyve' => [
+          'type' => 'int',
+        ],
+        'active' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'isBlocked' => array(
+        ],
+        'isDeleted' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'encodedTHUMBS' => array(
+        ],
+        'isBlocked' => [
           'type' => 'int',
           'size' => 'tiny',
           'unsigned' => 'true',
-        ),
-        'thumb' => array(
+        ],
+        'encodedTHUMBS' => [
+          'type' => 'int',
+          'size' => 'tiny',
+          'unsigned' => 'true',
+        ],
+        'thumb' => [
           'type' => 'varchar',
           'length' => 256,
-        ),
-        'copyright' => array(
+        ],
+        'copyright' => [
           'type' => 'varchar',
           'length' => 256,
-        ),
-        'runtime' => array(
+        ],
+        'runtime' => [
           'type' => 'varchar',
           'length' => 8,
-        ),
-      ),
-    );
+        ],
+      ],
+    ];
   }
 
   /**

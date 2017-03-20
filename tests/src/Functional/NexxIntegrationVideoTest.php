@@ -438,7 +438,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    */
   protected function mapOmniaTermId($tid) {
     $result = $this->database->select('nexx_taxonomy_term_data', 'n')
-      ->fields('n', array('nexx_item_id'))
+      ->fields('n', ['nexx_item_id'])
       ->condition('n.tid', $tid)
       ->execute();
 
@@ -491,13 +491,13 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    *   (optional) $edit parameter for drupalPostForm() on the third step ('Field
    *   settings' form).
    */
-  protected function submitFieldUi($bundle_path, $field_name, $label = NULL, $field_type = 'test_field', array $storage_edit = array(), array $field_edit = array()) {
+  protected function submitFieldUi($bundle_path, $field_name, $label = NULL, $field_type = 'test_field', array $storage_edit = [], array $field_edit = []) {
     $label = $label ?: $this->randomString();
-    $initial_edit = array(
+    $initial_edit = [
       'new_storage_type' => $field_type,
       'label' => $label,
       'field_name' => $field_name,
-    );
+    ];
 
     // Allow the caller to set a NULL path in case they navigated to the right
     // page before calling this method.

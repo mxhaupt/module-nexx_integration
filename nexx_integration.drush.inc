@@ -12,21 +12,21 @@ use Drupal\media_entity\Entity\Media;
  * Implements hook_drush_commands().
  */
 function nexx_integration_drush_command() {
-  $items = array();
+  $items = [];
 
-  $items['nexx-export-taxonomy'] = array(
+  $items['nexx-export-taxonomy'] = [
     'description' => "Export taxonomy terms to omnia. This inserts all terms into Omnia, it cannot check if they already exist.",
-    'arguments' => array(
+    'arguments' => [
       'source_vocabulary' => 'Drupal vocabulary to export.',
-    ),
-    'examples' => array(
+    ],
+    'examples' => [
       'drush -l http://example.com nexx-export-taxonomy category' => 'Export drupal categories vocabulary to omnia',
-    ),
-  );
+    ],
+  ];
 
-  $items['nexx-perform-unpublish-delete'] = array(
+  $items['nexx-perform-unpublish-delete'] = [
     'description' => "Delete and unpublish old videos which should be unpublished or deleted.",
-  );
+  ];
 
   return $items;
 }
@@ -42,7 +42,7 @@ function drush_nexx_integration_nexx_export_taxonomy($source_vocabulary) {
 
   $vocabulary = $type_manager->getStorage("taxonomy_vocabulary")->load($source_vocabulary);
   if (empty($vocabulary)) {
-    drush_set_error(dt("Given vocabulary !vocabulary does not exist.", array('!vocabulary' => $source_vocabulary)));
+    drush_set_error(dt("Given vocabulary !vocabulary does not exist.", ['!vocabulary' => $source_vocabulary]));
     exit;
   }
 
@@ -99,26 +99,26 @@ function drush_nexx_integration_nexx_perform_unpublish_delete($per_batch = 20) {
     ->execute();
 
   $chunks = array_chunk(array_values($ids), $per_batch);
-  $operations = array();
+  $operations = [];
 
   foreach ($chunks as $chunk) {
-    $operations[] = array(
+    $operations[] = [
       "_nexx_integration_drush_batch_op",
-      array(
+      [
         $chunk,
         $storage,
         $video_field,
-      ),
-    );
+      ],
+    ];
   }
 
-  $batch = array(
+  $batch = [
     'operations' => $operations,
     'title' => t('Process all old videos'),
     'init_message' => t('Initializing'),
     'error_message' => t('An error occurred'),
     'finished' => '_nexx_integration_drush_batch_finished',
-  );
+  ];
 
   batch_set($batch);
   $batch =& batch_get();

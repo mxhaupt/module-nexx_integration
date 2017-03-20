@@ -11,26 +11,26 @@ use Drupal\Core\Database\Database;
  * Implements hook_schema().
  */
 function nexx_integration_schema() {
-  $schema['nexx_taxonomy_term_data'] = array(
+  $schema['nexx_taxonomy_term_data'] = [
     'description' => 'Stores taxonomy data for exchange with Omnia video cms per taxonomy term.',
-    'fields' => array(
-      'tid' => array(
+    'fields' => [
+      'tid' => [
         'description' => 'Taxonomy term id: {taxonomy_term_data}.tid.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-      ),
-      'nexx_item_id' => array(
+      ],
+      'nexx_item_id' => [
         'description' => 'Nexx item ID.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-      ),
-    ),
-    'primary key' => array('tid'),
-  );
+      ],
+    ],
+    'primary key' => ['tid'],
+  ];
   return $schema;
 }
 
@@ -47,31 +47,31 @@ function nexx_integration_install() {
  * Add nexx_taxonomy_term_data database schema.
  */
 function nexx_integration_update_8001() {
-  $spec = array(
+  $spec = [
     'description' => 'Stores taxonomy data for exchange with Omnia video cms per taxonomy term.',
-    'fields' => array(
-      'tid' => array(
+    'fields' => [
+      'tid' => [
         'description' => 'Taxonomy term id: {taxonomy_term_data}.tid.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-      ),
-      'vid' => array(
+      ],
+      'vid' => [
         'description' => 'The ID of the terms target entity: {taxonomy_term_data}.vid.',
         'type' => 'varchar_ascii',
         'not null' => TRUE,
         'length' => 32,
-      ),
-      'nexx_item_id' => array(
+      ],
+      'nexx_item_id' => [
         'description' => 'Nexx item ID.',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-      ),
-    ),
-  );
+      ],
+    ],
+  ];
   $schema = Database::getConnection()->schema();
   $schema->createTable('nexx_taxonomy_term_data', $spec);
 }
@@ -86,7 +86,7 @@ function nexx_integration_update_8002() {
  * Add primary key, remove vid.
  */
 function nexx_integration_update_8003() {
-  $spec = array('tid');
+  $spec = ['tid'];
   $schema = Database::getConnection()->schema();
 
   // A primary key.
@@ -124,10 +124,10 @@ function nexx_integration_update_8004() {
           if (isset($schema_data[$existing_field_property])) {
             // This is the actual update, adding the new field.
             if ($database_schema->tableExists($table_name) && !$database_schema->fieldExists($table_name, $new_field_property)) {
-              $messages[] = t('Updating nexx field @field in table @table', array(
+              $messages[] = t('Updating nexx field @field in table @table', [
                 '@field' => $field_name,
                 '@table' => $table_name,
-              ));
+              ]);
               $database_schema->addField($table_name, $new_field_property, [
                 'type' => 'varchar',
                 'length' => 256,
@@ -170,16 +170,16 @@ function nexx_integration_update_8005() {
           // TODO: investigate how to properly determine,
           // if we are dealing with a nexx field.
           $existing_field_property = $field_name . '_encodedSSC';
-          $new_field_properties = array($field_name . '_runtime', $field_name . '_copyright');
+          $new_field_properties = [$field_name . '_runtime', $field_name . '_copyright'];
 
           if (isset($schema_data[$existing_field_property])) {
             foreach ($new_field_properties as $new_field_property) {
               // This is the actual update, adding the new field.
               if ($database_schema->tableExists($table_name) && !$database_schema->fieldExists($table_name, $new_field_property)) {
-                $messages[] = t('Updating nexx field @field in table @table', array(
+                $messages[] = t('Updating nexx field @field in table @table', [
                   '@field' => $field_name,
                   '@table' => $table_name,
-                ));
+                ]);
                 $database_schema->addField($table_name, $new_field_property, [
                   'type' => 'varchar',
                   'length' => 256,
@@ -223,16 +223,16 @@ function nexx_integration_update_8006() {
           // TODO: investigate how to properly determine,
           // if we are dealing with a nexx field.
           $existing_field_property = $field_name . '_encodedSSC';
-          $new_field_properties = array($field_name . '_hash');
+          $new_field_properties = [$field_name . '_hash'];
 
           if (isset($schema_data[$existing_field_property])) {
             foreach ($new_field_properties as $new_field_property) {
               // This is the actual update, adding the new field.
               if ($database_schema->tableExists($table_name) && !$database_schema->fieldExists($table_name, $new_field_property)) {
-                $messages[] = t('Updating nexx field @field in table @table', array(
+                $messages[] = t('Updating nexx field @field in table @table', [
                   '@field' => $field_name,
                   '@table' => $table_name,
-                ));
+                ]);
                 $database_schema->addField($table_name, $new_field_property, [
                   'type' => 'varchar',
                   'length' => 256,
@@ -274,23 +274,23 @@ function nexx_integration_update_8007() {
       foreach ($table_schema as $schema_key => $schema_data) {
         if ($schema_key === 'fields') {
           $field_schema_key = 'media.field_schema_data.' . $field_name;
-          $field_schema = $schema_key_value->get($field_schema_key, array());
+          $field_schema = $schema_key_value->get($field_schema_key, []);
 
           // Test if field schema contains a known nexx property.
           // TODO: investigate how to properly determine,
           // if we are dealing with a nexx field.
           $existing_field_property = $field_name . '_encodedSSC';
-          $update_field_properties = array($field_name . '_description', $field_name . '_altdescription');
+          $update_field_properties = [$field_name . '_description', $field_name . '_altdescription'];
 
           if (isset($schema_data[$existing_field_property])) {
             foreach ($update_field_properties as $update_field_property) {
 
               // This is the actual update, deleting the fields.
               if ($database_schema->tableExists($table_name) && $database_schema->fieldExists($table_name, $update_field_property)) {
-                $messages[] = t('Updating nexx field @field in table @table', array(
+                $messages[] = t('Updating nexx field @field in table @table', [
                   '@field' => $field_name,
                   '@table' => $table_name,
-                ));
+                ]);
                 $database_schema->dropField($table_name, $update_field_property);
                 // Also update schema key value.
                 foreach ($field_schema as $table => $definition) {

@@ -85,11 +85,11 @@ class NexxIframeVideoPlayer extends FormatterBase implements ContainerFactoryPlu
         '#omnia_id' => $this->config->get('omnia_id'),
         '#video_hash' => $item->hash,
         '#container_id' => 'player--' . Crypt::randomBytesBase64(8),
-        '#attached' => array(
-          'library' => array(
+        '#attached' => [
+          'library' => [
             'nexx_integration/base',
-          ),
-        ),
+          ],
+        ],
       ];
     }
 

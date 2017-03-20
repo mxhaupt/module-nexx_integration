@@ -229,8 +229,8 @@ class NexxVideo extends MediaTypeBase {
 
         /* @var \Drupal\file\Entity\File $uri */
         $uri = $teaser_image->{$source_field}->first()->entity->getFileUri();
-        $this->logger->debug("field map: @field", array('@field' => print_r($teaser_field, TRUE)));
-        $this->logger->debug("thumbnail uri: @uri", array('@uri' => $uri));
+        $this->logger->debug("field map: @field", ['@field' => print_r($teaser_field, TRUE)]);
+        $this->logger->debug("thumbnail uri: @uri", ['@uri' => $uri]);
         if ($uri) {
           return $uri;
         }
@@ -303,7 +303,7 @@ class NexxVideo extends MediaTypeBase {
    *   An array of field labels, keyed by field name.
    */
   protected function getMediaEntityReferenceFields($bundle_id, array $target_types) {
-    $bundle_options = array();
+    $bundle_options = [];
 
     foreach ($this->entityFieldManager->getFieldDefinitions('media', $bundle_id) as $field_id => $field_info) {
       // Filter entity_references which are not base fields.
@@ -327,7 +327,7 @@ class NexxVideo extends MediaTypeBase {
    *   An array of field labels, keyed by field name.
    */
   protected function getTextfields($bundle_id) {
-    $bundle_options = array();
+    $bundle_options = [];
 
     foreach ($this->entityFieldManager->getFieldDefinitions('media', $bundle_id) as $field_id => $field_info) {
       // Filter long text fields which are not base fields.
