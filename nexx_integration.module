@@ -31,10 +31,6 @@ function nexx_integration_taxonomy_term_insert(EntityInterface $term) {
  * Used to update terms into nexxOMNIA video CMS.
  */
 function nexx_integration_taxonomy_term_update(EntityInterface $term) {
-  $logger = \Drupal::getContainer()
-    ->get('logger.factory')
-    ->get('nexx_integration');
-
   $nexx_id = nexx_integration_taxonomy_term_nexx_id($term);
 
   // No nexx_id found, we need to insert the term.
@@ -46,7 +42,6 @@ function nexx_integration_taxonomy_term_update(EntityInterface $term) {
 
     // If omnia does not know the object yet, insert it.
     if ($response_data['state'] === 'error' && $response_data['info'] === 'no object') {
-      $logger->info('Unknown update object, inserting it instead');
       $response_data = nexx_integration_taxonomy_term_request($term, 'insert');
     }
     if (!empty($response_data['item'])) {
@@ -79,18 +74,19 @@ function nexx_integration_taxonomy_term_delete(EntityInterface $term) {
  * Implements and extends hook_taxonomy_term_request().
  *
  * Additionally to the default hook parameters two internal params are added.
+ *
+ * @throws \InvalidArgumentException
+ *   Throws an exception if an unsupported operation is supplied.
  */
 function nexx_integration_taxonomy_term_request(EntityInterface $term, $command, $additional_params = []) {
   $term_bundle = $term->bundle();
   $container = \Drupal::getContainer();
   $entity_type_manager = \Drupal::entityTypeManager();
   $nexx_notification = $container->get('nexx_integration.notification');
-  $logger = $container->get('logger.factory')->get('nexx_integration');
   $response_data = [];
   $valid_commands = ['update', 'insert', 'delete'];
   if (!in_array($command, $valid_commands)) {
-    $logger->error("Invalid command used: @command", ['@command' => $command]);
-    return $response_data;
+    throw new \InvalidArgumentException(sprintf('Invalid command used: %s', $command));
   }
 
   /*
@@ -145,9 +141,6 @@ function nexx_integration_taxonomy_term_request(EntityInterface $term, $command,
       }
       if (!empty($streamtype)) {
         $response_data = $nexx_notification->$command($streamtype, $term->id(), $params);
-      }
-      else {
-        $logger->info("No configured taxonomy found, skipping omnia sync");
       }
       break;
     }
