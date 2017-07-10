@@ -4,7 +4,7 @@ namespace Drupal\nexx_integration;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
-use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
 /**
  * Class VideoManagerService.
@@ -43,13 +43,13 @@ class VideoManagerService implements VideoManagerServiceInterface {
    *   The entity field manager.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
-   * @param \Drupal\Core\Logger\LoggerChannelFactory $logger
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger
    *   The config factory service.
    */
   public function __construct(
     EntityFieldManagerInterface $entity_field_manager,
     ConfigFactoryInterface $config_factory,
-    LoggerChannelFactory $logger
+    LoggerChannelFactoryInterface $logger
   ) {
     $this->entityFieldManager = $entity_field_manager;
     $this->config = $config_factory->get('nexx_integration.settings');
