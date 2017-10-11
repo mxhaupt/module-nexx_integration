@@ -1,5 +1,5 @@
 {
-  "name": "burdamagazinorg/nexx_integration",
+  "name": "drupal/nexx_integration",
   "type": "drupal-module",
   "description": "Nexx Omnia and player Integration",
   "license": "GPL-2.0+",

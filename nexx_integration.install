@@ -28,6 +28,12 @@ function nexx_integration_schema() {
         'not null' => TRUE,
         'default' => 0,
       ],
+      'vid' => [
+        'type' => 'varchar',
+        'description' => 'The ID of the terms target entity: {taxonomy_term_data}.vid.',
+        'length' => 32,
+        'not null' => TRUE,
+      ],
     ],
     'primary key' => ['tid'],
   ];
@@ -310,4 +316,47 @@ function nexx_integration_update_8007() {
     $message .= implode('</br>', $messages);
   }
   return $message;
+}
+
+/**
+ * Add vid field into nexx_taxonomy_term_data table and fill them.
+ */
+function nexx_integration_update_8008() {
+  $table = 'nexx_taxonomy_term_data';
+
+  /** @var \Drupal\Core\Database\Connection $db */
+  $database = \Drupal::service('database');
+
+  $schema = $database->schema();
+  $schema->addField($table, 'vid', [
+    'type' => 'varchar',
+    'description' => 'The ID of the terms target entity: {taxonomy_term_data}.vid.',
+    'length' => 32,
+    'not null' => FALSE,
+  ]);
+
+  $result = $database->select($table, 'n')
+    ->fields('n', ['tid'])
+    ->execute();
+  $tids = $result->fetchAll();
+
+  foreach ($tids as $item) {
+    $result = $database->select('taxonomy_term_field_data', 't')
+      ->fields('t', ['vid'])
+      ->condition('t.tid', $item->tid)
+      ->execute();
+    $vid = $result->fetchField();
+
+    $database->update($table)
+      ->fields(['vid' => $vid])
+      ->condition('tid', $item->tid)
+      ->execute();
+  }
+
+  $schema->changeField($table, 'vid', 'vid', [
+    'type' => 'varchar',
+    'description' => 'The ID of the terms target entity: {taxonomy_term_data}.vid.',
+    'length' => 32,
+    'not null' => TRUE,
+  ]);
 }

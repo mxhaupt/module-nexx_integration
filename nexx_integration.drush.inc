@@ -77,6 +77,7 @@ function drush_nexx_integration_nexx_perform_unpublish_delete($per_batch = 20) {
       break;
     }
   }
+
   if (empty($video_field)) {
     drush_set_error(dt("No video data field defined."));
     exit;

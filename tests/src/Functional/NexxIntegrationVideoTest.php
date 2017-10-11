@@ -75,11 +75,25 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
   protected $fieldStorageDefinition;
 
   /**
+   * The video manager service.
+   *
+   * @var \Drupal\nexx_integration\VideoManagerServiceInterface
+   */
+  protected $videoManager;
+
+  /**
    * The field entity definition.
    *
    * @var array
    */
   protected $fieldDefinition;
+
+  /**
+   * The drupal cron service.
+   *
+   * @var \Drupal\Core\Cron
+   */
+  protected $cron;
 
   public static $modules = [
     'taxonomy',
@@ -94,6 +108,9 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
   protected function setUp() {
     parent::setUp();
     $this->database = $this->container->get('database');
+    $this->videoManager = $this->container->get('nexx_integration.videomanager');
+    $this->cron = $this->container->get('cron');
+
     // Prepare some users.
     $this->adminUser = $this->drupalCreateUser([], NULL, TRUE);
     $this->videoUser = $this->drupalCreateUser(['use omnia notification gateway']);
@@ -134,7 +151,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
-    $videoField = $videoEntity->get('field_video');
+    $videoFieldName = $this->videoManager->videoFieldName();
+    $videoField = $videoEntity->get($videoFieldName);
 
     $this->assertEquals($videoEntity->label(), $videoField->title);
 
@@ -167,7 +185,9 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
   public function testInactiveVideoCreation() {
     $id = 3;
     // Send active=0 now.
-    $data = $this->getTestVideoData($id, 0, 1, 0);
+    $data = $this->getTestVideoData($id);
+    $data->itemStates->active = 0;
+
     $videoData = $this->postVideoData($data);
     $this->assertEquals($videoData->refnr, $id, "Video id is $id");
 
@@ -181,8 +201,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    */
   public function testInactiveVideoUpdate() {
     $id = 4;
-    // Send active=1 now.
-    $data = $this->getTestVideoData($id, 0, 1, 1);
+
+    $data = $this->getTestVideoData($id);
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -191,7 +211,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     );
 
     // Send active=0 now.
-    $data = $this->getTestVideoData($id, 0, 1, 0);
+    $data->itemStates->active = 0;
+
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -205,8 +226,11 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    */
   public function testInactiveSscVideoCreation() {
     $id = 5;
+
+    $data = $this->getTestVideoData($id);
     // Send isSSC=0 now.
-    $data = $this->getTestVideoData($id, 0, 0, 1);
+    $data->itemStates->isSSC = 0;
+
     $videoData = $this->postVideoData($data);
     $this->assertEquals($videoData->refnr, $id, "Video id is $id");
 
@@ -219,8 +243,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    */
   public function testInactiveSscVideoUpdate() {
     $id = 6;
-    // Send isSSC=1 now.
-    $data = $this->getTestVideoData($id, 0, 1, 1);
+    $data = $this->getTestVideoData($id);
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -228,7 +251,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $id should be status=1 because of isSSC=1.");
 
     // Send isSSC=0 now.
-    $data = $this->getTestVideoData($id, 0, 0, 1);
+    $data->itemStates->isSSC = 0;
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -242,8 +265,10 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
   public function testDeletedVideoCreate() {
     $id = 7;
     $count = $this->countVideos();
+    $data = $this->getTestVideoData($id);
     // Send delete=1 now.
-    $data = $this->getTestVideoData($id, 1, 1, 1);
+    $data->itemStates->isDeleted = 1;
+
     $videoData = $this->postVideoData($data);
     $this->assertEquals($videoData->refnr, $id, "Video id is $id");
 
@@ -258,7 +283,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $id = 8;
 
     // Send delete=0 now.
-    $data = $this->getTestVideoData($id, 0, 1, 1);
+    $data = $this->getTestVideoData($id);
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
@@ -266,14 +291,59 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $id should be status=1 before deletion.");
     $count = $this->countVideos();
 
+    $data = $this->getTestVideoData($id);
     // Send delete=1 now.
-    $data = $this->getTestVideoData($id, 1, 1, 1);
+    $data->itemStates->isDeleted = 1;
+
     $videoData = $this->postVideoData($data);
 
     $videoEntity = $this->loadVideoEntity($videoData->value);
     $this->assertNull($videoEntity, "Video id $id should be deleted.");
     $this->assertEquals($count - 1, $this->countVideos(), "Counting all videos 
     after deletion. Video id $id should be deleted.");
+  }
+
+  /**
+   * Test expiration cron.
+   */
+  public function testCronExpiration() {
+    $id = 9;
+    $pastDate = REQUEST_TIME - 10000;
+    $futureDate = REQUEST_TIME + 10000;
+    $videoFieldName = $this->videoManager->videoFieldName();
+
+    // First create a new entity that should be created as an active entity
+    // with activation date in the past and expire date in the futur.
+    $data = $this->getTestVideoData($id);
+    $data->itemStates->validfrom_ssc = $pastDate;
+    $data->itemStates->validto_ssc = $futureDate;
+
+    $videoData = $this->postVideoData($data);
+    $videoEntity = $this->loadVideoEntity($videoData->value);
+
+    // Make sure this is active.
+    $this->assertEquals(1, $videoEntity->get("status")->getString(), "Video
+    $id should be created with status=1.");
+
+    // Set expire date in the past and run cron.
+    $videoEntity->get($videoFieldName)->first()->set('validto_ssc', $pastDate);
+    $videoEntity->save();
+
+    $this->cron->run();
+    $videoEntity = $this->loadVideoEntity($videoData->value);
+    $this->assertEquals(0, $videoEntity->get("status")->getString(), "Video
+    $id should be set to status=0 after cron run with expire date in the past.");
+
+    // Set expire date to the future, the activation date in the past
+    // and run cron.
+    $videoEntity->get($videoFieldName)->first()->set('validto_ssc', $futureDate);
+    $videoEntity->get($videoFieldName)->first()->set('validfrom_ssc', $pastDate);
+    $videoEntity->save();
+
+    $this->cron->run();
+    $videoEntity = $this->loadVideoEntity($videoData->value);
+    $this->assertEquals(1, $videoEntity->get("status")->getString(), "Video
+    $id should be set to status=1 after cron run with activation date in the past.");
   }
 
   /**
@@ -359,26 +429,20 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    *
    * @param int $videoId
    *   Setup video ID.
-   * @param int $isDeleted
-   *   Setup if idDeleted will be 0|1.
-   * @param int $isSSC
-   *   Setup if isSSC will be 0|1.
-   * @param int $active
-   *   Setup if active will be 0|1.
    *
    * @return \stdClass
    *   Test video data object
    */
-  protected function getTestVideoData($videoId, $isDeleted = 0, $isSSC = 1, $active = 1) {
+  protected function getTestVideoData($videoId) {
     $tags = [];
     foreach ($this->terms['testTags'] as $tag) {
-      $tags[] = $this->mapOmniaTermId($tag->id());
+      $tags[] = $this->mapOmniaTermId($tag->id(), 'tags');
     }
     $actors = [];
     foreach ($this->terms['testActor'] as $actor) {
-      $actors[] = $this->mapOmniaTermId($actor->id());
+      $actors[] = $this->mapOmniaTermId($actor->id(), 'star');
     }
-    $channel = $this->mapOmniaTermId($this->terms['testChannel'][0]->id());
+    $channel = $this->mapOmniaTermId($this->terms['testChannel'][0]->id(), 'channel');
 
     $itemData = new \stdClass();
     $itemData->itemID = $videoId;
@@ -397,7 +461,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $itemData->tags_ids = implode(',', $tags);
 
     $itemStates = new \stdClass();
-    $itemStates->isSSC = $isSSC;
+    $itemStates->isSSC = 1;
     $itemStates->encodedSSC = 1;
     $itemStates->validfrom_ssc = 0;
     $itemStates->validto_ssc = 0;
@@ -406,8 +470,8 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
     $itemStates->encodedMOBILE = 1;
     $itemStates->validfrom_mobile = 0;
     $itemStates->validto_mobile = 0;
-    $itemStates->active = $active;
-    $itemStates->isDeleted = $isDeleted;
+    $itemStates->active = 1;
+    $itemStates->isDeleted = 0;
     $itemStates->isBlocked = 0;
     $itemStates->encodedTHUMBS = 1;
 
@@ -432,14 +496,17 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
    *
    * @param int $tid
    *   The term id of the term.
+   * @param int $vid
+   *   The drupal vid of the term.
    *
    * @return int
    *   The omnia id of the term.
    */
-  protected function mapOmniaTermId($tid) {
+  protected function mapOmniaTermId($tid, $vid) {
     $result = $this->database->select('nexx_taxonomy_term_data', 'n')
       ->fields('n', ['nexx_item_id'])
       ->condition('n.tid', $tid)
+      ->condition('n.vid', $vid)
       ->execute();
 
     $drupal_id = $result->fetchField();
@@ -537,7 +604,7 @@ class NexxIntegrationVideoTest extends BrowserTestBase {
         $this->terms[$vocabularyName][$i] = $term;
 
         // Mapping an omnia ID.
-        update_nexx_term_id_mapping($term->id(), ($term->id() + 100));
+        update_nexx_term_id_mapping($term->id(), ($term->id() + 100), $vocabularyName);
       }
     }
   }

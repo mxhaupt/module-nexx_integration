@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
- * Class Omnia.
+ * Class OmniaController.
  *
  * @package Drupal\nexx_integration\Controller
  */
@@ -78,7 +78,7 @@ class OmniaController extends ControllerBase {
   protected $token;
 
   /**
-   * Omnia constructor.
+   * OmniaController constructor.
    *
    * @param \Drupal\Core\Database\Connection $database
    *   The database service.
@@ -380,7 +380,7 @@ class OmniaController extends ControllerBase {
 
     // Update taxonomy references.
     if (!empty($channelField) && !empty($channel_id)) {
-      $term_id = $this->mapTermId($channel_id);
+      $term_id = $this->mapTermId($channel_id, 'channel');
       if (!empty($term_id)) {
         $media->$channelField = $term_id;
       }
@@ -395,12 +395,12 @@ class OmniaController extends ControllerBase {
     }
 
     if (!empty($actorField)) {
-      $mapped_actor_ids = $this->mapMultipleTermIds($actor_ids);
+      $mapped_actor_ids = $this->mapMultipleTermIds($actor_ids, 'star');
       $media->$actorField = $mapped_actor_ids;
     }
 
     if (!empty($tagField)) {
-      $mapped_tag_ids = $this->mapMultipleTermIds($tag_ids);
+      $mapped_tag_ids = $this->mapMultipleTermIds($tag_ids, 'tags');
       $media->$tagField = $mapped_tag_ids;
     }
 
@@ -432,14 +432,16 @@ class OmniaController extends ControllerBase {
    *
    * @param int[] $omnia_ids
    *   Array of omnia termn ids.
+   * @param int $vid
+   *   The drupal vid of the term.
    *
    * @return int[]
    *   Array of mapped drupal ids, might contain less ids then the input array.
    */
-  protected function mapMultipleTermIds(array $omnia_ids) {
+  protected function mapMultipleTermIds(array $omnia_ids, $vid) {
     $drupal_ids = [];
     foreach ($omnia_ids as $omnia_id) {
-      $drupalId = $this->mapTermId($omnia_id);
+      $drupalId = $this->mapTermId($omnia_id, $vid);
       if ($drupalId) {
         $drupal_ids[] = $drupalId;
       }
@@ -460,14 +462,17 @@ class OmniaController extends ControllerBase {
    *
    * @param int $omnia_id
    *   The omnia id of the term.
+   * @param int $vid
+   *   The drupal vid of the term.
    *
    * @return int
    *   The drupal id of the term.
    */
-  protected function mapTermId($omnia_id) {
+  protected function mapTermId($omnia_id, $vid) {
     $result = $this->database->select('nexx_taxonomy_term_data', 'n')
       ->fields('n', ['tid'])
       ->condition('n.nexx_item_id', $omnia_id)
+      ->condition('n.vid', $vid)
       ->execute();
 
     $drupal_id = $result->fetchField();

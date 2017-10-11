@@ -15,5 +15,6 @@ hidden:
   field_preview_image: true
   field_video: true
   langcode: true
+  path: true
   name: true
   uid: true
