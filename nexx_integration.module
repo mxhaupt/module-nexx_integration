@@ -48,7 +48,7 @@ function nexx_integration_taxonomy_term_insert(EntityInterface $term) {
   if (!empty($response_data['item'])) {
     $drupal_id = $term->id();
     $nexx_id = $response_data['item'];
-    $vid = $term->get('id')->getString();
+    $vid = $term->bundle();
 
     update_nexx_term_id_mapping($drupal_id, $nexx_id, $vid);
   }
@@ -76,7 +76,7 @@ function nexx_integration_taxonomy_term_update(EntityInterface $term) {
     if (!empty($response_data['item'])) {
       $drupal_id = $term->id();
       $nexx_id = $response_data['item'];
-      $vid = $term->get('id')->getString();
+      $vid = $term->bundle();
 
       update_nexx_term_id_mapping($drupal_id, $nexx_id, $vid);
     }
