@@ -75,14 +75,6 @@ class NexxVideoInfo extends WidgetBase implements ContainerFactoryPluginInterfac
     array &$form,
     FormStateInterface $form_state
   ) {
-
-    $element['item_id'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Item ID'),
-      '#default_value' => isset($items[$delta]->item_id) ? $items[$delta]->item_id : 0,
-      '#description' => $this->t('nexxOMNIA item ID.'),
-      '#required' => FALSE,
-    ];
     return $element;
   }
 

@@ -14,6 +14,9 @@ nexx_integration.settings:
     omnia_id:
       type: integer
       label:  'The unique identifier of the site, given by nexx.tv.'
+    notification_access_key:
+      type: string
+      label:  'NEXX notification access key.'
 
 media_entity.bundle.type.nexx_video:
   type: mapping
