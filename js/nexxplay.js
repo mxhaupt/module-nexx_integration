@@ -35,26 +35,23 @@
    */
   Drupal.nexxPLAY.views = [];
 
-  window.onPLAYReady = function () {
+  window.onPlayReady = function () {
 
     /* global _play */
-    // Configure data mode.
-    _play.preInit.setDatamode('static');
-
     // Bind play state listener.
-    _play.preInit.setPlaystateListener(function (state, data) {
+    _play.config.addPlaystateListener(function (object) {
       var model;
 
       // Update player index in corresponding model.
-      if (state === 'playeradded') {
-        if ((model = Drupal.nexxPLAY.collection.findWhere({containerId: data.container}))) {
-          model.set('playerIndex', Number(data.playerindex));
+      if (object.event === 'playeradded') {
+        if ((model = Drupal.nexxPLAY.collection.findWhere({containerId: object.playerContainer}))) {
+          model.set('playerIndex', Number(object.playerIndex));
         }
       }
 
       // Update play state in corresponding model.
-      if ((model = Drupal.nexxPLAY.collection.findWhere({playerIndex: Number(data.playerindex)}))) {
-        model.set('state', state);
+      if ((model = Drupal.nexxPLAY.collection.findWhere({playerIndex: Number(object.playerIndex)}))) {
+        model.set('state', object.event);
       }
     });
 

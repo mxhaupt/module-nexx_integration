@@ -114,6 +114,7 @@ trait NexxTestTrait {
     $this->setUpTaxonomy();
     $this->setTestConfig();
     $this->config = $this->config('nexx_integration.settings');
+    $this->htmlOutputEnabled = FALSE;
   }
 
   /**

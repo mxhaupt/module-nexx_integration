@@ -2,7 +2,7 @@
   "name": "drupal/nexx_integration",
   "type": "drupal-module",
   "description": "Nexx Omnia and player Integration",
-  "license": "GPL-2.0+",
+  "license": "GPL-2.0-or-later",
   "minimum-stability": "dev",
   "require-dev": {
     "burdamagazinorg/thunder-dev-tools": "dev-master"

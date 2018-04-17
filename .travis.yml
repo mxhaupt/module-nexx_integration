@@ -4,11 +4,17 @@
 # Template provided by https://github.com/LionsAd/drupal_ti.
 
 language: php
+cache:
+  apt: true
+  directories:
+  - "$HOME/.composer/cache"
+  - "$HOME/.drush/cache"
+  - "$HOME/travis-phantomjs"
 
 sudo: false
 
 php:
-  - 7
+  - 7.1
   - 5.6
 
 addons:
@@ -17,7 +23,6 @@ addons:
       - nodejs
 branches:
   only:
-    - /^feature/
     - /^8\.([0-9]+|x)\-[0-9]+\.([0-9]+|x)$/
 
 env:
@@ -37,7 +42,7 @@ env:
 
     # The environment to use, supported are: drupal-7, drupal-8
     - DRUPAL_TI_ENVIRONMENT="drupal-8"
-    - DRUPAL_TI_CORE_BRANCH="8.4.x"
+    - DRUPAL_TI_CORE_BRANCH="8.5.x"
 
     # The installation profile to use:
     #- DRUPAL_TI_INSTALL_PROFILE="testing"
@@ -50,7 +55,7 @@ env:
     - DRUPAL_TI_WEBSERVER_PORT="8080"
 
     # Simpletest specific commandline arguments, the DRUPAL_TI_SIMPLETEST_GROUP is appended at the end.
-    - DRUPAL_TI_SIMPLETEST_ARGS="--verbose --color --concurrency 4 --url $DRUPAL_TI_WEBSERVER_URL:$DRUPAL_TI_WEBSERVER_PORT"
+    - DRUPAL_TI_SIMPLETEST_ARGS="--verbose --color --concurrency 4 --suppress-deprecations --url $DRUPAL_TI_WEBSERVER_URL:$DRUPAL_TI_WEBSERVER_PORT"
 
     # === Behat specific variables.
     # This is relative to $TRAVIS_BUILD_DIR
@@ -92,7 +97,7 @@ env:
     #- DRUPAL_TI_RUNNERS="behat"
     #- DRUPAL_TI_RUNNERS="phpunit simpletest behat"
     # Use phpunit-core to test modules with phpunit with Drupal 8 core.
-    - DRUPAL_TI_RUNNERS="phpunit-core"
+    - DRUPAL_TI_RUNNERS="simpletest"
 
 mysql:
   database: drupal_travis_db

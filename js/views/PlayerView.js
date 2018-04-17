@@ -33,26 +33,13 @@
       if (this.model.get('apiIsReady') && !this.model.playerIsInitialized()) {
         var id = this.model.get('containerId');
         var videoId = this.model.get('videoId');
+        var config = new _play.PlayerConfiguration({dataMode: 'static', autoPlay: this.model.get('autoPlay')});
 
-        // Initialize player.
-        if (!_play.player.isPresent()) {
-          // Main player always has index '0'.
-          this.model.set('playerIndex', 0);
+        // Disable autoplay behavior (this is handled by custom code).
+        config.addOverride('autoPlay', 0);
 
-          // Disable autoplay behavior of main player (this is handled by custom
-          // code).
-          _play.preInit.overrideAutoPlay(0);
+        _play.control.addPlayer(id, videoId, 'video', config);
 
-          // Initialize main player.
-          _play.init(id, videoId, 'single');
-        }
-        else {
-          // Add other player (with autoplay disabled, this is handled by custom
-          // code).
-          _play.addPlayer(id, videoId, 'single', {
-            overrideAutoPlay: 0
-          });
-        }
       }
     },
 
@@ -64,17 +51,17 @@
       /* global _play */
       // Player is initialized?
       if (this.model.get('playerIsReady')) {
-        var index = this.model.get('playerIndex');
+        var id = this.model.get('containerId');
         var isPaused = this.model.get('isPaused');
 
         // Pause player.
         if (isPaused) {
-          _play.player.interact('Pause', null, index);
+          _play.control.interact.pause(id);
         }
 
         // Start player.
         else {
-          _play.player.interact('Play', null, index);
+          _play.control.interact.play(id);
         }
       }
     },
