@@ -23,7 +23,7 @@ function nexx_integration_library_info_build() {
       'dependencies' => ['core/jquery', 'core/drupal', 'core/backbone'],
       'css' => ['theme' => ['css/styles.css' => []]],
       'js' => [
-        '//require.nexx.cloud/' . $omnia_id => [
+        '//arc.nexx.cloud/sdk/' . $omnia_id . '.play' => [
           'type' => 'external',
         ],
         'js/nexxplay.js' => [],
